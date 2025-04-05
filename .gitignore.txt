@@ -12,6 +12,15 @@
 *.user
 *.userprefs
 
+[Aa]ssets/AssetStoreTools*
+
+# Archivos de Visual Studio
+.vs/
+*.sln
+*.csproj
+*.user
+*.userprefs
+
 # VS Code
 .vscode/
 .vs/
