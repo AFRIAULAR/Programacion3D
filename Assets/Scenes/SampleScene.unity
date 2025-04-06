@@ -562,6 +562,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   characterController: {fileID: 372644782}
+  cameraTransform: {fileID: 963194228}
+  mouseSensitivity: 2
 --- !u!143 &372644782
 CharacterController:
   m_ObjectHideFlags: 0
