@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class PersonController : MonoBehaviour
@@ -13,10 +14,19 @@ public class PersonController : MonoBehaviour
     public float mouseSensitivityX = 2f;
     public float mouseSensitivityY = 2f;
     private float verticalRotation = 0f;
+
+
+    // DETECTAR TOUCH
+    private Vector2 lastTouchPosition;
+    private bool isTouching = false;
+
     void Update()
     {
         MovePlayer();
-        MoveCamera();
+        MoveCameraMouse();
+        
+        if(Input.touchCount >0)
+        MoveCameraTouch();
     }
 
     void MovePlayer()
@@ -30,17 +40,61 @@ public class PersonController : MonoBehaviour
        characterController.Move(movement * speed * Time.deltaTime);
     }
 
-    void MoveCamera()
+        // MOVER CAMARA CON MOUSE
+    void MoveCameraMouse()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivityX;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivityY;
+        
+        ApplyRotation(mouseX, mouseY);
+    
+        //    CLAMP (rango de alcance de la camara)
+        //    verticalRotation += mouseY;
+        //    verticalRotation = Mathf.Clamp(verticalRotation, -45f, 45f);
 
-        //CLAMP (rango de alcance de la camara)
-        verticalRotation += mouseY;
-        verticalRotation = Mathf.Clamp(verticalRotation, -45f, 45f);
-
-        cameraTransform.localRotation = Quaternion.Euler(verticalRotation,0,0f); //rotacion vertical para mover la camara, arrastrar camara al script en inspector para que funcione
-        transform.Rotate(Vector3.up * mouseX);
+        //    Rotacion vertical:
+        //    cameraTransform.localRotation = Quaternion.Euler(verticalRotation,0,0f);
+        //    Rotacion horizontal:
+        //    transform.Rotate(Vector3.up * mouseX); //vector3.up indica el eje alrededor del cual se rota (eje x)
+        //
     }
-}
+
+        // DETECTAR TOUCHES
+    void MoveCameraTouch()
+    {
+        Touch touch = Input.GetTouch(0);
+
+        if(touch.phase == TouchPhase.Began) //pregunta si se toco la pantalla y guarda la posicion
+        {
+            lastTouchPosition = touch.position;
+            isTouching = true;
+        }
+        //estoy moviendo el dedo???
+        else if(touch.phase == TouchPhase.Moved && isTouching)
+        {
+            float posX = touch.deltaPosition.x * mouseSensitivityX;
+            float posy = touch.deltaPosition.y * mouseSensitivityY;
+           ApplyRotation(posy, posX);
+            
+        }
+        else if (touch.phase == TouchPhase.Ended)
+        {
+            isTouching = false;
+            Debug.Log("DEJASTE DE TOCAR");
+        }
+    }
+        
+        
+        // MOVER CAMARA EN PC Y MOBILE
+    void ApplyRotation(float horizontal, float vertical)
+    {
+        verticalRotation -= vertical;
+        verticalRotation = Mathf.Clamp(verticalRotation, -45, 45);
+        
+        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+        transform.Rotate(Vector3.up * horizontal);
+
+    }
+
+  }
  
