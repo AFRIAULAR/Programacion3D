@@ -12,6 +12,7 @@ public class Shoot : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             ShootBullet();
+            SoundManager.instance.PlaySound(SoundType.DISPARO_1, 2f);
         }
     }
 
